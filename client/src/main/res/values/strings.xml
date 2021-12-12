@@ -1,0 +1,9 @@
+<resources>
+  <string name="app_name">BleChatClient</string>
+  <string name="ble_address">Type in a valid address</string>
+  <string name="connect">Connect</string>
+  <string name="disconnected">Disconnected</string>
+  <string name="connected">Connected</string>
+  <string name="hint_message">Chat a new message ...</string>
+  <string name="send">Send</string>
+</resources>
