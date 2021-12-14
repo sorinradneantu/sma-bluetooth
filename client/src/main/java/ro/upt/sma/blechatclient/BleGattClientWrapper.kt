@@ -2,6 +2,7 @@ package ro.upt.sma.blechatclient
 
 import android.bluetooth.*
 import android.bluetooth.BluetoothAdapter.STATE_CONNECTED
+import android.bluetooth.BluetoothGattCharacteristic.*
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.content.Context
@@ -83,13 +84,19 @@ class BleGattClientWrapper(private val context: Context) {
                 super.onConnectionStateChange(gatt, status, newState)
 
                 if (newState == STATE_CONNECTED) {
-                    // TODO 1: Once connection was established then trigger service discovery.
+                    //  Once connection was established then trigger service discovery.
 
-                    // TODO 2: Inform the message listener about CONNECTED value status.
+                    gatt.discoverServices()
+
+                    //  Inform the message listener about CONNECTED value status.
+
+                    messageListener.onConnectionStateChanged(MessageListener.ConnectionStatus.CONNECTED)
 
                 } else {
                     gatt.close()
-                    // TODO 3: inform the message listener about DISCONNECTED value status.
+                    // Inform the message listener about DISCONNECTED value status.
+
+                    messageListener.onConnectionStateChanged(MessageListener.ConnectionStatus.DISCONNECTED)
 
                 }
             }
@@ -97,15 +104,25 @@ class BleGattClientWrapper(private val context: Context) {
             override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
                 super.onServicesDiscovered(gatt, status)
 
-                // TODO 4: Acquire a handle for the CHAT_ROOM_CHARACTERISTIC.
-                val characteristic: BluetoothGattCharacteristic? = null
-                //
+                // Acquire a handle for the CHAT_ROOM_CHARACTERISTIC.
+
+                /*
+
+                val characteristic = BluetoothGattCharacteristic(CHAT_ROOM_CHARACTERISTIC,
+                    PROPERTY_WRITE or PROPERTY_READ,
+                    PERMISSION_WRITE or PERMISSION_READ)
+
+                 */
+                val characteristic: BluetoothGattCharacteristic = gatt.getService(CHAT_SERVICE).getCharacteristic(CHAT_ROOM_CHARACTERISTIC)
                 gatt.setCharacteristicNotification(characteristic, true)
 
+                // Get and enable the CLIENT_CONFIG descriptor for the same characteristic.
 
-                // TODO 5: Get and enable the CLIENT_CONFIG descriptor for the same characteristic.
+                val clientConfigDescriptor = characteristic.getDescriptor(CLIENT_CONFIG)
 
-                //TODO 6: Write descriptor to GATT handle.
+                // Write descriptor to GATT handle.
+
+                gatt.writeDescriptor(clientConfigDescriptor)
 
             }
 
